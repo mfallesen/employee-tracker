@@ -20,7 +20,7 @@ inquirer.prompt([
     console.log(data);
     if (data.startprompt === 'Add Department, Role, or Employee.') {
         addToCompany()
-    } else if (data.startprompt === 'View Company Roster.') {
+    } else if (data.startprompt === 'View Company Information.') {
         console.log("View");
     } else if ((data.startprompt === 'Update Employee Information.')) {
         console.log("Update");
@@ -94,6 +94,89 @@ function addToCompany() {
             }
         }
 
+
+    ]).then( function(responses) {
+        console.table(responses);
+    })
+}
+
+// View company info
+function viewCompany() {
+    console.log("Im viewing the company");
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "What would you like to view?",
+            name: "viewstartprompt",
+            choices: ["View Departments", "View Employees", "View Company Roles"]
+        },
+        {
+            type: "input",
+            message: "Which department do you want to view?",
+            name: "viewdepartment",
+            when: function (response) {
+                return response.viewstartprompt === "View Department";
+            }
+        },
+        {
+            type: "input",
+            message: "Which company role would you like to view?",
+            name: "viewcompanyrole",
+            when: function (response) {
+                return response.viewstartprompt === "View Company Roles";
+            }
+        },
+        {
+            type: "input",
+            message: "Which employee do you wish to view?",
+            name: "viewemployees",
+            when: function (response) {
+                return response.viewstartprompt === "View Employees";
+            }
+        },
+        
+
+    ]).then( function(responses) {
+        console.table(responses);
+    })
+}
+
+
+// Update Company Information
+function updateCompanyInfo() {
+    console.log("Im updating the company");
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "What would you like to update?",
+            name: "updatestartprompt",
+            choices: ["Update Departments", "Update Employees", "Update Company Roles"]
+        },
+        {
+            type: "input",
+            message: "Which department do you want to update?",
+            name: "updatedepartment",
+            when: function (response) {
+                return response.viewstartprompt === "Update Departments";
+            }
+        },
+        {
+            type: "input",
+            message: "Which company role would you like to update?",
+            name: "updatecompanyrole",
+            when: function (response) {
+                return response.viewstartprompt === "Update Company Roles";
+            }
+        },
+        {
+            type: "input",
+            message: "Which employee do you wish to update?",
+            name: "updateemployees",
+            when: function (response) {
+                return response.viewstartprompt === "Update Employees";
+            }
+        },
+        
 
     ]).then( function(responses) {
         console.table(responses);
