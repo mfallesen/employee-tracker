@@ -1,32 +1,5 @@
 // Dependencies
 const inquirer = require("inquirer");
-const mysql = require("mysql")
-const logTable = require("console.table")
-
-// SQL queries go here
-
-// Inquirer prompts
-inquirer.prompt([
-
-    {
-        type: "list",
-        message: "Welcome. What would you like to do today?",
-        name: "startprompt",
-        choices: ["Add Department, Role, or Employee.", "View Company Roster.", "Update Employee Information."]
-    },
-
-
-]).then(function (data) {
-    console.log(data);
-    if (data.startprompt === 'Add Department, Role, or Employee.') {
-        addToCompany()
-    } else if (data.startprompt === 'View Company Information.') {
-        console.log("View");
-    } else if ((data.startprompt === 'Update Employee Information.')) {
-        console.log("Update");
-    }
-});
-
 
 function addToCompany() {
     console.log("Im here!");
@@ -96,7 +69,9 @@ function addToCompany() {
 
 
     ]).then( function(responses) {
-        console.table(responses);
+        
+        // console.table(responses); 
+        return responses
     })
 }
 
@@ -182,3 +157,6 @@ function updateCompanyInfo() {
         console.table(responses);
     })
 }
+
+
+module.exports = {updateCompanyInfo, viewCompany, addToCompany};
