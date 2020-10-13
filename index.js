@@ -34,27 +34,34 @@ connection.connect(function(err) {
     
     
     ]).then(function (data) {
-        
-        if (data.startprompt === 'Add Department, Role, or Employee.') {
-           
-            addToCompany();
-        } else if (data.startprompt === 'View Company Information.') {
-            viewCompany();
-            console.log("View");
-        } else if (data.startprompt === 'Update Employee Information.') {
-            updateCompanyInfo()
-            console.log("Update");
+        console.log(data);
+        switch (data.startprompt) {
+            case 'Add Department, Role, or Employee.':
+                console.log("Chosen!");
+                addToCompany();
+                break;
+            case 'View Company Information.':
+                viewCompany();
+                break;
+            case 'Update Employee Information.':
+                updateCompanyInfo();
+                break;
+            default:
+                console.log("OOPS!. Something went wrong");
+                break;
         }
+        
     });
     connection.end();
   });
 
-// Inquirer prompts
 
 
+
+
+  // Inquirer prompts
 
 function addToCompany() {
-    console.log("Im here!");
     inquirer.prompt([
         {
             type: "list",
@@ -121,8 +128,6 @@ function addToCompany() {
 
 
     ]).then( function(responses) {
-        
-        // console.table(responses); 
         return responses
     })
 }
@@ -164,7 +169,7 @@ function viewCompany() {
         
 
     ]).then( function(responses) {
-        console.table(responses);
+       return responses
     })
 }
 
@@ -206,6 +211,6 @@ function updateCompanyInfo() {
         
 
     ]).then( function(responses) {
-        console.table(responses);
+        return responses
     })
 }
