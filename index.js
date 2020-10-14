@@ -3,7 +3,7 @@ const ask = require('./prompts.js')
 // Dependencies
 const inquirer = require("inquirer");
 const mysql = require("mysql")
-const logTable = require("console.table")
+require("console.table")
 
 // Database Connection
 const connection = mysql.createConnection({
@@ -20,7 +20,7 @@ const connection = mysql.createConnection({
     database: "company_db"
 });
 
-connection.connect(function(err) {
+connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     inquirer.prompt([
@@ -31,8 +31,8 @@ connection.connect(function(err) {
             name: "startprompt",
             choices: ["Add Department, Role, or Employee.", "View Company Roster.", "Update Employee Information."]
         },
-    
-    
+
+
     ]).then(function (data) {
         console.log(data);
         switch (data.startprompt) {
@@ -50,16 +50,16 @@ connection.connect(function(err) {
                 console.log("OOPS!. Something went wrong");
                 break;
         }
-        
+
     });
     connection.end();
-  });
+});
 
 
 
 
 
-  // Inquirer prompts
+// Inquirer prompts
 
 function addToCompany() {
     inquirer.prompt([
@@ -127,7 +127,10 @@ function addToCompany() {
         }
 
 
-    ]).then( function(responses) {
+    ]).then(function (responses) {
+
+
+
         return responses
     })
 }
@@ -166,51 +169,56 @@ function viewCompany() {
                 return response.viewstartprompt === "View Employees";
             }
         },
-        
 
-    ]).then( function(responses) {
-       return responses
+
+    ]).then(function (responses) {
+
+        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM employee RIGHT JOIN role ON employee.role_id = role.id RIGHT JOIN department ON role.department_id = department.id;", {
+
+        }, function (err) {
+            if (err) throw err
+            console.table(responses);
+        })
     })
 }
 
+    // Update Company Information
+    function updateCompanyInfo() {
+        console.log("Im updating the company");
+        inquirer.prompt([
+            {
+                type: "list",
+                message: "What would you like to update?",
+                name: "updatestartprompt",
+                choices: ["Update Departments", "Update Employees", "Update Company Roles"]
+            },
+            {
+                type: "input",
+                message: "Which department do you want to update?",
+                name: "updatedepartment",
+                when: function (response) {
+                    return response.viewstartprompt === "Update Departments";
+                }
+            },
+            {
+                type: "input",
+                message: "Which company role would you like to update?",
+                name: "updatecompanyrole",
+                when: function (response) {
+                    return response.viewstartprompt === "Update Company Roles";
+                }
+            },
+            {
+                type: "input",
+                message: "Which employee do you wish to update?",
+                name: "updateemployees",
+                when: function (response) {
+                    return response.viewstartprompt === "Update Employees";
+                }
+            },
 
-// Update Company Information
-function updateCompanyInfo() {
-    console.log("Im updating the company");
-    inquirer.prompt([
-        {
-            type: "list",
-            message: "What would you like to update?",
-            name: "updatestartprompt",
-            choices: ["Update Departments", "Update Employees", "Update Company Roles"]
-        },
-        {
-            type: "input",
-            message: "Which department do you want to update?",
-            name: "updatedepartment",
-            when: function (response) {
-                return response.viewstartprompt === "Update Departments";
-            }
-        },
-        {
-            type: "input",
-            message: "Which company role would you like to update?",
-            name: "updatecompanyrole",
-            when: function (response) {
-                return response.viewstartprompt === "Update Company Roles";
-            }
-        },
-        {
-            type: "input",
-            message: "Which employee do you wish to update?",
-            name: "updateemployees",
-            when: function (response) {
-                return response.viewstartprompt === "Update Employees";
-            }
-        },
-        
 
-    ]).then( function(responses) {
-        return responses
-    })
-}
+        ]).then(function (responses) {
+            return responses
+        })
+    }
