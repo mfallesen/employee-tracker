@@ -1,5 +1,3 @@
-// Imports
-const ask = require('./prompts.js')
 // Dependencies
 const inquirer = require("inquirer");
 const mysql = require("mysql")
@@ -8,31 +6,28 @@ require("console.table")
 // Database Connection
 const connection = mysql.createConnection({
     host: "localhost",
-
-    // Your port; if not 3306
     port: 3306,
-
-    // Your username
     user: "root",
-
-    // Your password
     password: "password",
     database: "company_db"
 });
 function start() {
-    console.log("connected as id " + connection.threadId);
+    console.log("==============================================");
+    console.log("=                                            =");
+    console.log("=          ACME EMPLOYEE TRACKER             =");
+    console.log("=                                            =");
+    console.log("==============================================");
     inquirer.prompt([
 
         {
             type: "list",
-            message: "Welcome. What would you like to do today?",
+            message: "Welcome! What would you like to do today?",
             name: "startprompt",
-            choices: ["Add Department, Role, or Employee.", "View Company Roster.", "Update Employee Information.", "QUIT"]
+            choices: ["Add Department, Role, or Employee.", "View Company Information.", "Update Employee Information.", "QUIT"]
         },
 
 
     ]).then(function (data) {
-        console.log(data);
         switch (data.startprompt) {
             case 'Add Department, Role, or Employee.':
                 addToCompany();
@@ -44,21 +39,19 @@ function start() {
                 updateCompanyInfo();
                 break;
             case 'QUIT':
+                console.log("See You Soon!");
                 connection.end()
                 break;
             default:
-                console.log("-------------------");
+                console.log("X------------X------------X");
                 console.log("OOPS!. Something went wrong");
+                console.log("X------------X------------X");
                 break;
         }
     });
 }
 
-
-
-
-// Inquirer prompts
-
+// Add to company
 function addToCompany() {
     inquirer.prompt([
         {
@@ -70,23 +63,30 @@ function addToCompany() {
     ]).then(function (response) {
         switch (response.addstartprompt) {
             case 'Add Department':
+                console.log("=================");
                 console.log("Adding Department");
+                console.log("=================");
                 addDepartment();
                 break;
             case 'Add Employee':
+                console.log("===============");
                 console.log("Adding Employee");
+                console.log("===============");
                 addEmployee();
                 break;
             case 'Add Company Role':
+                console.log("===========");
                 console.log("Adding Role");
+                console.log("===========");
                 addRole();
                 break;
             case 'Main Menu':
                 start();
                 break;
             default:
-                console.log("=============");
+                console.log("X------------X------------X");
                 console.log("OOPS!. Something went wrong");
+                console.log("X------------X------------X");
                 break;
         }
 
@@ -107,7 +107,7 @@ function addDepartment() {
             console.log("Something went wrong adding your department");
         }
         console.log(response.adddepartment + " Department Added!");
-        connection.end();
+        
         start();
     })
 
@@ -139,8 +139,8 @@ function addEmployee() {
         connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${response.addfirstname}','${response.addlastname}','${response.addemployeerole}','${response.addemployeemanager}')`), function (err) {
             if (err) throw err
         }
-        console.log("Role Added!");
-        connection.end();
+        console.log("Employee Added!");
+        
         start();
     })
 }
@@ -166,153 +166,138 @@ function addRole() {
             if (err) throw err
         }
         console.log("Role Added!");
-        connection.end();
+       
         start();
     })
 }
 
-
-
-
-// {
-//     type: "input",
-//     message: "What would you like to name your new company role??",
-//     name: "addcompanyrole",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Role";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is the job title?",
-//     name: "addjobtitle",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Role";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is the job salary?",
-//     name: "addjobsalary",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Role";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is your New Employee's first name?",
-//     name: "addfirstname",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Employee";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is your New Employee's last name?",
-//     name: "addlastname",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Employee";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is your New Employee's role?",
-//     name: "addemployeerole",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Employee";
-//     }
-// }
-
-
-
-
 // View company info
 function viewCompany() {
-    console.log("Im viewing the company");
     inquirer.prompt([
         {
             type: "list",
             message: "What would you like to view?",
             name: "viewstartprompt",
-            choices: ["View Departments", "View Employees", "View Company Roles"]
+            choices: ["View Departments", "View Employees", "View Company Roles", "Main Menu", "QUIT"]
         },
-        {
-            type: "input",
-            message: "Which department do you want to view?",
-            name: "viewdepartment",
-            when: function (response) {
-                return response.viewstartprompt === "View Department";
-            }
-        },
-        {
-            type: "input",
-            message: "Which company role would you like to view?",
-            name: "viewcompanyrole",
-            when: function (response) {
-                return response.viewstartprompt === "View Company Roles";
-            }
-        },
-        {
-            type: "input",
-            message: "Which employee do you wish to view?",
-            name: "viewemployees",
-            when: function (response) {
-                return response.viewstartprompt === "View Employees";
-            }
-        },
+       
+    ]).then(function (response) {
 
-
-    ]).then(function (responses) {
-
-        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM employee RIGHT JOIN role ON employee.role_id = role.id RIGHT JOIN department ON role.department_id = department.id;", {
-
-        }, function (err) {
-            if (err) throw err
-            console.table(responses);
-        })
+        switch (response.viewstartprompt) {
+            case 'View Departments':
+                console.log("==================");
+                console.log("Viewing Department");
+                console.log("==================");
+                viewDepartments();
+                break;
+            case 'View Employees':
+                console.log("=================");
+                console.log("Viewing Employees");
+                console.log("=================");
+                viewEmployees();
+                break;
+            case 'View Company Roles':
+                console.log("============");
+                console.log("Viewing Role");
+                console.log("============");
+                viewRoles();
+                break;
+            case 'Main Menu':
+                start();
+                break;
+            case 'QUIT':
+                break;
+            default:
+                console.log("X------------X------------X");
+                console.log("OOPS!. Something went wrong");
+                console.log("X------------X------------X");
+                break;
+        }
     })
+}
+
+function viewEmployees() {
+
+    let query = "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM employee RIGHT JOIN role ON employee.role_id = role.id RIGHT JOIN department ON role.department_id = department.id;";
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    
+    start();
+  });   
+}
+
+function viewDepartments() {
+    let query = "SELECT * FROM company_db.department;";
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    
+    start();
+  });  
+}
+
+function viewRoles() {
+    let query = "SELECT * FROM company_db.role";
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    
+    start();
+  });  
 }
 
 // Update Company Information
 function updateCompanyInfo() {
-    console.log("Im updating the company");
     inquirer.prompt([
         {
             type: "list",
             message: "What would you like to update?",
             name: "updatestartprompt",
-            choices: ["Update Departments", "Update Employees", "Update Company Roles"]
+            choices: ["Update Employee", "Main Menu", "Quit"]
         },
         {
             type: "input",
-            message: "Which department do you want to update?",
-            name: "updatedepartment",
-            when: function (response) {
-                return response.viewstartprompt === "Update Departments";
-            }
+            message: "Which employee do you wish to update? Use Employee ID.",
+            name: "updateemployee",
         },
         {
             type: "input",
-            message: "Which company role would you like to update?",
-            name: "updatecompanyrole",
-            when: function (response) {
-                return response.viewstartprompt === "Update Company Roles";
-            }
+            message: "What role do you wish to assign them? Use Numeric Role.",
+            name: "updateemployeerole",
         },
-        {
-            type: "input",
-            message: "Which employee do you wish to update?",
-            name: "updateemployees",
-            when: function (response) {
-                return response.viewstartprompt === "Update Employees";
-            }
-        },
-
-
     ]).then(function (responses) {
-        return responses
+        console.log(responses);
+        switch (responses.updatestartprompt) {
+            case 'Update Employee':
+                console.log("============");
+                console.log("Updating Role");
+                console.log("============");
+                updateEmployee(responses);
+                break;
+            case 'Main Menu':
+                start();
+                break;
+            case 'QUIT':
+                break;
+            default:
+                console.log("X------------X------------X");
+                console.log("OOPS!. Something went wrong");
+                console.log("X------------X------------X");
+                break;
+        }  
     })
 }
+
+function updateEmployee(responses) {
+    let query = `UPDATE employee SET role_id = ${responses.updateemployeerole} WHERE id = ${responses.updateemployee};`;
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.log("Employee Updated");
+    start();
+  });  
+}
+
 
 
 // Initialize Program
