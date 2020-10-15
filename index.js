@@ -27,7 +27,7 @@ function start() {
             type: "list",
             message: "Welcome. What would you like to do today?",
             name: "startprompt",
-            choices: ["Add Department, Role, or Employee.", "View Company Roster.", "Update Employee Information.", "QUIT"]
+            choices: ["Add Department, Role, or Employee.", "View Company Information.", "Update Employee Information.", "QUIT"]
         },
 
 
@@ -107,7 +107,7 @@ function addDepartment() {
             console.log("Something went wrong adding your department");
         }
         console.log(response.adddepartment + " Department Added!");
-        connection.end();
+        
         start();
     })
 
@@ -139,8 +139,9 @@ function addEmployee() {
         connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${response.addfirstname}','${response.addlastname}','${response.addemployeerole}','${response.addemployeemanager}')`), function (err) {
             if (err) throw err
         }
-        console.log("Role Added!");
-        connection.end();
+        console.log(response);
+        console.log("Employee Added!");
+        
         start();
     })
 }
@@ -166,65 +167,10 @@ function addRole() {
             if (err) throw err
         }
         console.log("Role Added!");
-        connection.end();
+       
         start();
     })
 }
-
-
-
-
-// {
-//     type: "input",
-//     message: "What would you like to name your new company role??",
-//     name: "addcompanyrole",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Role";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is the job title?",
-//     name: "addjobtitle",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Role";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is the job salary?",
-//     name: "addjobsalary",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Role";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is your New Employee's first name?",
-//     name: "addfirstname",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Employee";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is your New Employee's last name?",
-//     name: "addlastname",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Employee";
-//     }
-// },
-// {
-//     type: "input",
-//     message: "What is your New Employee's role?",
-//     name: "addemployeerole",
-//     when: function (response) {
-//         return response.addstartprompt === "Add Employee";
-//     }
-// }
-
-
-
 
 // View company info
 function viewCompany() {
@@ -234,43 +180,105 @@ function viewCompany() {
             type: "list",
             message: "What would you like to view?",
             name: "viewstartprompt",
-            choices: ["View Departments", "View Employees", "View Company Roles"]
+            choices: ["View Departments", "View Employees", "View Company Roles", "Main Menu", "QUIT"]
         },
-        {
-            type: "input",
-            message: "Which department do you want to view?",
-            name: "viewdepartment",
-            when: function (response) {
-                return response.viewstartprompt === "View Department";
-            }
-        },
-        {
-            type: "input",
-            message: "Which company role would you like to view?",
-            name: "viewcompanyrole",
-            when: function (response) {
-                return response.viewstartprompt === "View Company Roles";
-            }
-        },
-        {
-            type: "input",
-            message: "Which employee do you wish to view?",
-            name: "viewemployees",
-            when: function (response) {
-                return response.viewstartprompt === "View Employees";
-            }
-        },
+        // {
+        //     type: "input",
+        //     message: "Which department do you want to view?",
+        //     name: "viewdepartment",
+        //     when: function (response) {
+        //         return response.viewstartprompt === "View Department";
+        //     }
+        // },
+        // {
+        //     type: "input",
+        //     message: "Which company role would you like to view?",
+        //     name: "viewcompanyrole",
+        //     when: function (response) {
+        //         return response.viewstartprompt === "View Company Roles";
+        //     }
+        // },
+        // {
+        //     type: "input",
+        //     message: "Which employee do you wish to view?",
+        //     name: "viewemployees",
+        //     when: function (response) {
+        //         return response.viewstartprompt === "View Employees";
+        //     }
+        // },
 
 
-    ]).then(function (responses) {
+    ]).then(function (response) {
 
-        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM employee RIGHT JOIN role ON employee.role_id = role.id RIGHT JOIN department ON role.department_id = department.id;", {
+        switch (response.viewstartprompt) {
+            case 'View Departments':
+                console.log("==================");
+                console.log("Viewing Department");
+                console.log("==================");
+                viewDepartments();
+                break;
+            case 'View Employees':
+                console.log("=================");
+                console.log("Viewing Employees");
+                console.log("=================");
+                viewEmployees();
+                break;
+            case 'View Company Roles':
+                console.log("============");
+                console.log("Viewing Role");
+                console.log("============");
+                viewRoles();
+                break;
+            case 'Main Menu':
+                start();
+                break;
+            case 'QUIT':
+                break;
+            default:
+                console.log("=============");
+                console.log("OOPS!. Something went wrong");
+                break;
+        }
 
-        }, function (err) {
-            if (err) throw err
-            console.table(responses);
-        })
+
+        // connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM employee RIGHT JOIN role ON employee.role_id = role.id RIGHT JOIN department ON role.department_id = department.id;", {
+
+        // }, function (err) {
+        //     if (err) throw err
+        //     console.table(responses);
+        // })
     })
+}
+
+function viewEmployees() {
+
+    let query = "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM employee RIGHT JOIN role ON employee.role_id = role.id RIGHT JOIN department ON role.department_id = department.id;";
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    
+    start();
+  });   
+}
+
+function viewDepartments() {
+    let query = "SELECT * FROM company_db.department;";
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    
+    start();
+  });  
+}
+
+function viewRoles() {
+    let query = "SELECT * FROM company_db.role";
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    
+    start();
+  });  
 }
 
 // Update Company Information
